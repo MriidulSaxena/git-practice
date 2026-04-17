@@ -1,26 +1,26 @@
 # Stage 1: Build the React app
-FROM node:16.17.0-alpine as build
+FROM node:16.17.0-alpine AS build
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
+# Copy dependency files
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the remaining application code
+# Copy remaining code
 COPY . .
 
-# Build the React app
+# Build app
 RUN npm run build
 
-# Stage 2: Create a minimal production-ready image
+# Stage 2: Production image
 FROM nginx:alpine
 
-# Copy the built app from the 'build' stage
-COPY --from=build /app/build /usr/share/nginx/html
+# Copy build output
+COPY . /usr/share/nginx/html
 
-# Expose port 80
 EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
